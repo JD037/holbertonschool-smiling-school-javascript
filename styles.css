@@ -409,6 +409,16 @@
   }
 }
 
+.card-footer {
+  background-color: transparent; /* Removes gray background */
+}
+
+.rating img {
+  width: 20px; /* Adjusts the size of the stars */
+  height: auto; /* Maintains the aspect ratio of the stars */
+}
+
+
 /* SMILES Section  */
 
 .smiles {
@@ -916,3 +926,24 @@
     width: 90vw;
   }
 }
+
+/* Ensure that the cards have padding and margin */
+.card {
+  margin: 0 15px; /* Adjust the margin as needed */
+}
+
+/* Responsive adjustments for the carousel */
+@media (max-width: 768px) {
+  /* For tablet */
+  .carousel-item .col-md-6 {
+    max-width: 50%; /* Show 2 cards in a row */
+  }
+}
+
+@media (max-width: 576px) {
+  /* For mobile */
+  .carousel-item .col-12 {
+    max-width: 100%; /* Show 1 card in a row */
+  }
+}
+
