@@ -105,9 +105,76 @@ $(document).ready(function() {
       // Handle error
       $("#carouselExampleControls2 .carousel-inner").html('<p>Error loading tutorials</p>');
     }
-  });  
-});
-
-
-
+  });
   
+  // AJAX call for latest videos
+  $.ajax({
+    url: 'https://smileschool-api.hbtn.info/latest-videos',
+    type: 'GET',
+    beforeSend: function() {
+      $("#carouselExampleControls3 .carousel-inner").html('<div class="loader"></div>'); // Adjust if you have a different loader element
+    },
+    success: function(response) {
+      $("#carouselExampleControls3 .loader").remove();
+      let itemsPerSlide = 4;
+      let count = 0;
+      let carouselInner = $("#carouselExampleControls3 .carousel-inner");
+      carouselInner.empty(); // Clear the carousel inner
+
+      response.forEach(function(video, index) {
+        // Add active class to the first item
+        var activeClass = index === 0 ? 'active' : '';
+
+        // Generate the star rating HTML
+        var starsHtml = '';
+        for (let i = 0; i < 5; i++) {
+          starsHtml += i < video.star ? '<img src="images/star_on.png" alt="Star On">' : '<img src="images/star_off.png" alt="Star Off">';
+        }
+
+        // Create the card HTML
+        var cardHtml = `
+          <div class="col-md-3">
+            <div class="card mx-2">
+              <!-- Thumbnail image -->
+              <img src="${video.thumb_url}" class="card-img-top" alt="${video.title}">
+              <div class="card-body">
+                <!-- Video title and subtitle -->
+                <h5 class="card-title">${video.title}</h5>
+                <p class="card-text">${video['sub-title']}</p>
+                <!-- Rating and author details -->
+                <div class="user-info">
+                  <img src="${video.author_pic_url}" class="rounded-circle mr-2" alt="${video.author}" style="width: 40px; height: 40px;">
+                  <div class="rating">${starsHtml}</div>
+                  <small class="text-muted">${video.author}</small>
+                  <small class="text-muted">${video.duration}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Append a new row to the carousel item or create a new item
+        if (count % itemsPerSlide === 0) {
+          var newRow = $('<div class="row justify-content-center"></div>');
+          var newCarouselItem = $('<div class="carousel-item ' + activeClass + '"></div>').append(newRow);
+          carouselInner.append(newCarouselItem);
+        }
+        carouselInner.find('.carousel-item').last().find('.row').append(cardHtml);
+        count++;
+      });
+
+      // Initialize or refresh the carousel
+      $('#carouselExampleControls3').carousel({
+        interval: false
+      });
+
+      // If the last carousel item is empty or has less than 'itemsPerSlide', remove it
+      if (count % itemsPerSlide !== 0) {
+        $('#carouselExampleControls3 .carousel-inner .carousel-item').last().remove();
+      }
+    },
+    error: function() {
+      $("#carouselExampleControls3 .carousel-inner").html('<p>Error loading latest videos.</p>');
+    }
+  });
+});
