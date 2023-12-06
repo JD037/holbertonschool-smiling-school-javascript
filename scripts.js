@@ -177,4 +177,28 @@ $(document).ready(function() {
       $("#carouselExampleControls3 .carousel-inner").html('<p>Error loading latest videos.</p>');
     }
   });
+
+  // Pricing Quotes
+  $.ajax({
+    url: 'https://smileschool-api.hbtn.info/quotes',
+    type: 'GET',
+    beforeSend: function() {
+      $("#carouselExampleControls4 .carousel-inner").html('<div class="loader"></div>');
+    },
+    success: function(response) {
+      $("#carouselExampleControls4 .loader").remove();
+      response.forEach(function(quote, index) {
+        var activeClass = index === 0 ? 'active' : '';
+        var carouselItem = `
+          <div class="carousel-item ${activeClass}">
+            <!-- Structure your quote content here using quote data -->
+          </div>`;
+        $('#carouselExampleControls4 .carousel-inner').append(carouselItem);
+      });
+      $('#carouselExampleControls4').carousel();
+    },
+    error: function() {
+      $("#carouselExampleControls4 .carousel-inner").html('<p>Error loading quotes.</p>');
+    }
+  });
 });
