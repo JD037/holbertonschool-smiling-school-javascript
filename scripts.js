@@ -35,6 +35,55 @@ $(document).ready(function() {
         $('.carousel').carousel();
       }
     });
-  });
+
+    // AJAX call for popular tutorials
+$.ajax({
+    url: 'https://smileschool-api.hbtn.info/popular-tutorials',
+    type: 'GET',
+    beforeSend: function() {
+      $("#carouselExampleControls2 .carousel-inner").html('<div class="loader"></div>');
+    },
+    success: function(response) {
+      $("#carouselExampleControls2 .loader").remove();
+      response.forEach(function(tutorial, index) {
+        var activeClass = index === 0 ? 'active' : '';
+
+
+        
+        var cardHtml = `
+          <div class="col-md-3">
+            <div class="card mx-2">
+              <img src="${tutorial.thumb_url}" class="card-img-top" alt="${tutorial.title}">
+              <div class="card-body">
+                <h5 class="card-title">${tutorial.title}</h5>
+                <p class="card-text">${tutorial['sub-title']}</p>
+                <!-- Here you'll add the stars -->
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">${tutorial.author}</small>
+                <small class="text-muted">${tutorial.duration}</small>
+              </div>
+            </div>
+          </div>
+        `;
   
+        // Create a new row for each set of 4 tutorials or the last set if fewer than 4
+        if (index % 4 === 0 || index === response.length - 1) {
+          var newRow = $('<div class="carousel-item '+activeClass+'"><div class="row justify-content-center"></div></div>');
+          $("#carouselExampleControls2 .carousel-inner").append(newRow);
+        }
+        // Append the card to the last row
+        $("#carouselExampleControls2 .carousel-inner .row").last().append(cardHtml);
+      });
+      // Initialize or refresh the carousel
+      $('#carouselExampleControls2').carousel();
+    },
+    error: function() {
+      // Handle error
+      $("#carouselExampleControls2 .carousel-inner").html('<p>Error loading tutorials</p>');
+    }
+  });  
+});
+
+
   
