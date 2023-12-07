@@ -748,6 +748,13 @@
 
 /* Quotes Carousel */
 
+.author-pic {
+  width: 40px; /* Desired width */
+  height: 40px; /* Desired height */
+  border-radius: 50%; /* Makes the image round */
+  object-fit: cover; /* Ensures the image covers the area without being stretched */
+}
+
 
 /* ==============================================================
 ==============================================================
