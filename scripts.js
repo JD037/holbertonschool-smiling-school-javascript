@@ -204,91 +204,86 @@ $(document).ready(function() {
 
   // Function to load courses dynamically
   function loadCourses(searchValue, topicValue, sortValue) {
-    $.ajax({
-      url: 'https://smileschool-api.hbtn.info/courses',
-      type: 'GET',
-      data: {
+  $.ajax({
+    url: 'https://smileschool-api.hbtn.info/courses',
+    type: 'GET',
+    data: {
         q: searchValue,
         topic: topicValue,
         sort: sortValue
-      },
-      beforeSend: function() {
-        // Add loader here
+    },
+    beforeSend: function() {
         $("#video-cards-container").html('<div class="loader">Loading...</div>');
-      },
-      success: function(response) {
-        // Remove loader here
+    },
+    success: function(response) {
+        // Remove loader
         $("#video-cards-container .loader").remove();
+
         // Update the courses and dropdowns
         updateCourses(response.courses);
         updateDropdowns(response.topics, 'topic-dropdown', topicValue);
         updateDropdowns(response.sorts, 'sort-dropdown', sortValue);
-      },
-      error: function() {
+
+        // Update the video count display
+        var videoCount = response.courses.length; // Get the length of the courses array
+        $('.video-count').text(videoCount + ' videos'); // Update the text with the count
+    },
+    error: function() {
         $("#video-cards-container").html('<p>Error loading courses.</p>');
-      }
-    });
-  }
+    }
+  });
+}
 
   // Function to update the courses cards
   function updateCourses(courses) {
-    let html = '';
-    courses.forEach(function(course) {
-      // Construct card HTML here using course data
-      html += `
-        <div class="col-12 col-sm-6 col-lg-3 mb-4">
-          <div class="card">
-            <img src="${course.thumb_url}" class="card-img-top" alt="${course.title}">
-            <div class="card-body">
-              <h5 class="card-title">${course.title}</h5>
-              <p class="card-text">${course['sub-title']}</p>
-            </div>
-            <div class="card-footer">
-              <div class="user-info d-flex align-items-center">
-                <img src="${course.author_pic_url}" class="author-pic rounded-circle mr-3" alt="${course.author}">
-                <div>
-                  <small class="text-muted">${course.author}</small>
-                  <div class="rating">${generateStars(course.star)}</div>
-                </div>
+      let html = courses.map(course => `
+          <div class="col-12 col-sm-6 col-lg-3 mb-4">
+              <div class="card">
+                  <img src="${course.thumb_url}" class="card-img-top" alt="${course.title}">
+                  <div class="card-body">
+                      <h5 class="card-title">${course.title}</h5>
+                      <p class="card-text">${course['sub-title']}</p>
+                  </div>
+                  <div class="card-footer">
+                      <div class="user-info d-flex align-items-center">
+                          <img src="${course.author_pic_url}" class="author-pic rounded-circle mr-3" alt="${course.author}">
+                          <div>
+                              <small class="text-muted">${course.author}</small>
+                              <div class="rating">${generateStars(course.star)}</div>
+                          </div>
+                      </div>
+                  </div>
               </div>
-            </div>
           </div>
-        </div>
-      `;
-    });
-    $("#video-cards-container").html(html);
+      `).join('');
+      $("#video-cards-container").html(html);
   }
 
   // Helper function to generate star ratings
   function generateStars(rating) {
-    let stars = '';
-    for (let i = 0; i < 5; i++) {
-      stars += i < rating ? '<img src="images/star_on.png" alt="Star On">' : '<img src="images/star_off.png" alt="Star Off">';
-    }
-    return stars;
+      let stars = '';
+      for (let i = 0; i < 5; i++) {
+          stars += i < rating ? '<img src="images/star_on.png" alt="Star On">' : '<img src="images/star_off.png" alt="Star Off">';
+      }
+      return stars;
   }
 
   // Function to update dropdowns
   function updateDropdowns(options, dropdownId, selectedValue) {
-    let dropdownHtml = options.map(function(option) {
-      return `<option value="${option}" ${option === selectedValue ? 'selected' : ''}>${option}</option>`;
-    }).join('');
-    $(`#${dropdownId}`).html(dropdownHtml);
+      let dropdownHtml = options.map(option => `<option value="${option}" ${option === selectedValue ? 'selected' : ''}>${option}</option>`).join('');
+      $(`#${dropdownId}`).html(dropdownHtml);
   }
 
-  // Event listeners for search and dropdowns
-  $(document).ready(function() {
-    // Load courses initially
-    loadCourses('', 'All', 'Most popular');
+  // Load courses initially
+  loadCourses('', 'All', 'Most popular');
 
-    // Event listener for search input
-    $('#search-input').on('input', function() {
+  // Event listener for search input
+  $('#search-input').on('input', function() {
       loadCourses(this.value, $('#topic-dropdown').val(), $('#sort-dropdown').val());
-    });
+  });
 
-    // Event listeners for topic and sort dropdowns
-    $('#topic-dropdown, #sort-dropdown').on('change', function() {
+  // Event listeners for topic and sort dropdowns
+  $('#topic-dropdown, #sort-dropdown').on('change', function() {
       loadCourses($('#search-input').val(), $('#topic-dropdown').val(), $('#sort-dropdown').val());
-    });
   });
 });
